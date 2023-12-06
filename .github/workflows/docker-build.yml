@@ -30,4 +30,4 @@ jobs:
           context: ./docker/custom-servers
           file: ./docker/custom-servers/Dockerfile
           push: true
-          tags: nmbgeek/bedrock-connect:latest, nmbgeek/bedrock-connect:${{ steps.keydb.outputs.release }}
+          tags: nmbgeek/bedrock-connect:latest, nmbgeek/bedrock-connect:${{ steps.version.outputs.release }}
