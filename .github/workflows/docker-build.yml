@@ -9,6 +9,12 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
+      - id: version
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: Pugmatt
+          repo: BedrockConnect
+          excludes: prerelease, draft
       - name: Checkout
         uses: actions/checkout@v3
         
@@ -24,4 +30,4 @@ jobs:
           context: ./docker/custom-servers
           file: ./docker/custom-servers/Dockerfile
           push: true
-          tags: nmbgeek/bedrock-connect:latest
+          tags: nmbgeek/bedrock-connect:latest, nmbgeek/bedrock-connect:${{ steps.keydb.outputs.release }}
