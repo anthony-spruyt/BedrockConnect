@@ -1,21 +1,12 @@
-package main.com.pyratron.pugmatt.bedrockconnect.sql;
+package main.com.pyratron.pugmatt.bedrockconnect.data;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
+import main.com.pyratron.pugmatt.bedrockconnect.BedrockConnect;
 
-
-
-/**
- * Connects to and uses a MySQL database
- *
- * @author -_Husky_-
- * @author tips48
- */
-public class MySQL extends Database {
+public class Database {
     private final String user;
     private final String database;
     private final String password;
@@ -27,19 +18,7 @@ public class MySQL extends Database {
 
     private Connection connection;
 
-    /**
-     * Creates a new MySQL instance
-     *
-     * @param hostname
-     *            Name of the host
-     * @param database
-     *            Database name
-     * @param username
-     *            Username
-     * @param password
-     *            Password
-     */
-    public MySQL(String hostname, String database, String username, String password, DatabaseTypes databasetype, Boolean autoReconnect) {
+    public Database(String hostname, String database, String username, String password, DatabaseTypes databasetype, Boolean autoReconnect) {
         this.hostname = hostname;
         this.database = database;
         this.user = username;
@@ -49,7 +28,6 @@ public class MySQL extends Database {
         this.autoReconnect = autoReconnect;
     }
 
-    @Override
     public Connection openConnection() {
         try {
             String Driver = "";
@@ -81,89 +59,35 @@ public class MySQL extends Database {
 
 
             connection = DriverManager.getConnection(Driver + this.hostname + "/" + this.database + "?serverTimezone=UTC&useLegacyDatetimeCode=false" + Extra, this.user, this.password);
-            System.out.println("- Database Connection Started -");
+            BedrockConnect.logger.debug("Connection made with database");
 
         } catch (SQLException e) {
-            System.out.println("ERROR: Could not connect to Database server! because: " + e.getMessage());
+            BedrockConnect.logger.error("Failed to establish connection with database: " + e.getMessage());
         } catch (ClassNotFoundException e) {
-            System.out.println("ERROR: JDBC Driver not found!");
+            BedrockConnect.logger.error("JDBC Driver not found");
         }
         return connection;
     }
 
-    @Override
     public boolean checkConnection() {
         return connection != null;
     }
 
-    @Override
     public Connection getConnection() {
         return connection;
     }
 
-    @Override
+    public DatabaseTypes getType() {
+        return databasetype;
+    }
+
     public void closeConnection() {
         if (connection != null) {
             try {
                 connection.close();
             } catch (SQLException e) {
-                System.out.println("ERROR: Error closing the MySQL Connection!");
-                e.printStackTrace();
+                BedrockConnect.logger.error("Error closing the database connection", e);
             }
         }
     }
-
-    public ResultSet querySQL(String query) {
-        Connection c = null;
-
-        if (checkConnection()) {
-            c = getConnection();
-        } else {
-            c = openConnection();
-        }
-
-        Statement s = null;
-
-        try {
-            s = c.createStatement();
-        } catch (SQLException e1) {
-            e1.printStackTrace();
-        }
-
-        ResultSet ret = null;
-
-        try {
-            ret = s.executeQuery(query);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        closeConnection();
-
-        return ret;
-    }
-
-    public void updateSQL(String update) {
-
-        Connection c = null;
-
-        if (checkConnection()) {
-            c = getConnection();
-        } else {
-            c = openConnection();
-        }
-
-        Statement s = null;
-
-        try {
-            s = c.createStatement();
-            s.executeUpdate(update);
-        } catch (SQLException e1) {
-            e1.printStackTrace();
-        }
-
-        closeConnection();
-
-    }
-
 }
