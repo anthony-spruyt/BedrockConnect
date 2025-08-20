@@ -30,4 +30,4 @@ jobs:
           context: ./docker/custom-servers
           file: ./docker/custom-servers/Dockerfile
           push: true
-          tags: nmbgeek/bedrockconnect:latest, aspruyt/bedrockconnect:${{ steps.version.outputs.release }}
+          tags: aspruyt/bedrockconnect:latest, aspruyt/bedrockconnect:${{ steps.version.outputs.release }}
